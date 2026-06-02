@@ -1,8 +1,10 @@
 #include "roBa.dtsi"
-// DYA Studio対応: Runtime Input Processor のノード定義(mouse_/scroll_runtime_input_processor)と
-//                 入力イベントコード(INPUT_EV_REL / INPUT_REL_X/Y)を取り込む
-#include <input/processors/runtime-input-processor.dtsi>
+// DYA Studio対応: 入力イベントコード(INPUT_EV_REL / INPUT_REL_X/Y)を先に定義する。
+//   この後で include する runtime-input-processor.dtsi が `type = <INPUT_EV_REL>;` 等で
+//   これらのマクロを参照するため、include 順を逆にするとパースエラーになる。
 #include <zephyr/dt-bindings/input/input-event-codes.h>
+// DYA Studio対応: Runtime Input Processor のノード定義(mouse_/scroll_runtime_input_processor)
+#include <input/processors/runtime-input-processor.dtsi>
 
 &default_transform {
     col-offset = <6>;
