@@ -32,6 +32,11 @@ manifest:
     - name: zmk-module-runtime-input-processor
       remote: cormoran
       revision: zmk-v0.3.0.0
-    # ※ battery-history モジュールは使わないため追加しない
+    # バッテリー残量を DYA Studio の Battery タブに表示するためのモジュール
+    #   ※ v0.3 タグ無し・層APIを使わないため main で可 (settings-rpc と同様)。
+    #   ※ 有効化は roBa_R.conf の CONFIG_ZMK_BATTERY_HISTORY 系で行う。
+    - name: zmk-module-battery-history
+      remote: cormoran
+      revision: main
   self:
     path: config
