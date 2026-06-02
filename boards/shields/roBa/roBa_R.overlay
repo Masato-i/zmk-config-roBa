@@ -1,4 +1,10 @@
 #include "roBa.dtsi"
+// DYA Studio対応: 入力イベントコード(INPUT_EV_REL / INPUT_REL_X/Y)を先に定義する。
+//   この後で include する runtime-input-processor.dtsi が `type = <INPUT_EV_REL>;` 等で
+//   これらのマクロを参照するため、include 順を逆にするとパースエラーになる。
+#include <zephyr/dt-bindings/input/input-event-codes.h>
+// DYA Studio対応: Runtime Input Processor のノード定義(mouse_/scroll_runtime_input_processor)
+#include <input/processors/runtime-input-processor.dtsi>
 
 &default_transform {
     col-offset = <6>;
@@ -19,7 +25,35 @@
         status = "okay";
         compatible = "zmk,input-listener";
         device = <&trackball>;
+        // DYA Studio対応: mouse → scroll の2段チェーン。
+        //   mouse は全レイヤーで有効 (Temp-Layer で auto mouse layer を実現)。
+        //   scroll は active-layers のレイヤーでのみ変換し、それ以外は素通し。
+        //   どちらも DYA Studio から実行時に変更できる。
+        input-processors = <&mouse_runtime_input_processor &scroll_runtime_input_processor>;
     };
+};
+
+// DYA Studio対応: auto mouse layer (旧 automouse-layer=<4> の代替)
+//   トラックボール操作で自動的に MOUSE レイヤー(4)を有効化し、
+//   キー押下 or 一定時間操作なしで解除する。値は DYA Studio から変更可能。
+&mouse_runtime_input_processor {
+    temp-layer-enabled;
+    temp-layer = <4>;                       // MOUSE レイヤー
+    temp-layer-activation-delay-ms = <0>;   // 操作開始から有効化までの遅延
+    temp-layer-deactivation-delay-ms = <700>; // 操作停止から解除までの遅延 (旧 AUTOMOUSE_TIMEOUT 相当)
+};
+
+// DYA Studio対応: スクロール (旧 scroll-layers=<5> の代替)
+//   トラックボールの生イベント(REL_X/Y)をスクロールに変換。
+//   active-layers のビットマスクで有効レイヤーを指定 (bit5 = SCROLL レイヤー(5))。
+//   速度・有効レイヤーは DYA Studio から変更可能。
+&scroll_runtime_input_processor {
+    x-codes = <INPUT_REL_X>;
+    y-codes = <INPUT_REL_Y>;
+    xy-to-scroll-enabled;
+    active-layers = <0x20>;     // 1 << 5 = SCROLL レイヤー(5)
+    scale-multiplier = <1>;
+    scale-divisor = <4>;        // スクロール速度。大きいほど遅い。
 };
 
 &pinctrl {
@@ -53,9 +87,15 @@
 
     trackball: trackball@0 {
         status = "okay";
-        compatible = "pixart,pmw3610";
+        // DYA Studio対応: cormoran 版ドライバを使う (compatible は cormoran,pmw3610)
+        compatible = "cormoran,pmw3610";
         reg = <0>;
         spi-max-frequency = <2000000>;
         irq-gpios = <&gpio0 2 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
+        // DYA Studio対応: CPI と入力イベント種別はノード側で指定する
+        cpi = <400>;
+        evt-type = <INPUT_EV_REL>;
+        x-input-code = <INPUT_REL_X>;
+        y-input-code = <INPUT_REL_Y>;
     };
 };

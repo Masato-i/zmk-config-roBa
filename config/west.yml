@@ -1,16 +1,37 @@
 manifest:
   remotes:
-    - name: zmkfirmware
-      url-base: https://github.com/zmkfirmware
-    - name: kumamuk-git
-      url-base: https://github.com/kumamuk-git
+    # DYA Studio対応: ZMK本体・PMW3610ドライバ・各モジュールはすべて cormoran の DYA 対応版を使う
+    - name: cormoran
+      url-base: https://github.com/cormoran
   projects:
+    # DYA Studio対応: ZMK本体を cormoran の DYA Studio 対応 fork (v0.3-branch+dya) に切替
     - name: zmk
-      remote: zmkfirmware
-      revision: v0.3-branch
+      remote: cormoran
+      revision: v0.3-branch+dya
       import: app/west.yml
+    # DYA Studio対応: トラックボールは cormoran 版ドライバ (compatible = "cormoran,pmw3610")
+    #   ※方向は overlay のノードではなく Kconfig (INVERT_X / INVERT_Y / SWAP_XY) で調整する
     - name: zmk-pmw3610-driver
-      remote: kumamuk-git
+      remote: cormoran
       revision: main
+    # DYA Studio対応モジュール群 ----------------------------------------
+    #   ※ ZMK 本体が v0.3 系 (v0.3-branch+dya) なので、各モジュールも v0.3 互換の
+    #     `zmk-v0.3.0.0` タグを使う。main は ZMK main+dya 向けで API が異なり
+    #     (例: zmk_keymap_layer_activate の引数), v0.3 ではビルドエラーになる。
+    # BLE 管理 (Studio から BLE プロファイル操作)
+    - name: zmk-module-ble-management
+      remote: cormoran
+      revision: zmk-v0.3.0.0
+    # 設定の永続化を Studio と同期 (settings RPC)
+    #   ※ このモジュールは v0.3 タグが無く main のみ。変更された層 API を使わないため main で可。
+    - name: zmk-module-settings-rpc
+      remote: cormoran
+      revision: main
+    # トラックボール用 Runtime Input Processor
+    #   (auto mouse layer = Temp-Layer / スクロール / 感度 などを Studio から実行時変更)
+    - name: zmk-module-runtime-input-processor
+      remote: cormoran
+      revision: zmk-v0.3.0.0
+    # ※ battery-history モジュールは使わないため追加しない
   self:
     path: config
