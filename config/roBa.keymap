@@ -19,17 +19,12 @@
 
         tab {
             bindings = <&kp TAB>;
-            key-positions = <11 12>;
+            key-positions = <0 1>;
         };
 
         shift_tab {
             bindings = <&kp LS(TAB)>;
-            key-positions = <12 13>;
-        };
-
-        muhennkann {
-            bindings = <&to_layer_0 INT_MUHENKAN>;
-            key-positions = <11 10>;
+            key-positions = <1 2>;
         };
 
         double_quotation {
@@ -37,9 +32,29 @@
             key-positions = <20 21>;
         };
 
-        eq {
-            bindings = <&kp EQUAL>;
-            key-positions = <24 25>;
+        zenkaku_hanaku {
+            bindings = <&kp RA(SPACE)>;
+            key-positions = <18 19>;
+        };
+
+        backspace {
+            bindings = <&kp BACKSPACE>;
+            key-positions = <9 8>;
+        };
+
+        delete_key {
+            bindings = <&kp DELETE>;
+            key-positions = <7 8>;
+        };
+
+        cmd_space {
+            bindings = <&kp LG(LEFT_COMMAND)>;
+            key-positions = <12 13>;
+        };
+
+        cmd2tap {
+            bindings = <&double_tap_cmd>;
+            key-positions = <2 3>;
         };
     };
 
@@ -49,6 +64,13 @@
             #binding-cells = <1>;
             bindings = <&to 0 &macro_param_1to1 &kp MACRO_PLACEHOLDER>;
             label = "TO_LAYER_0";
+        };
+
+        double_tap_cmd: double_tap_cmd {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            bindings = <&kp LEFT_COMMAND &kp LEFT_COMMAND>;
+            label = "DOUBLE_TAP_CMD";
         };
     };
 
@@ -126,11 +148,12 @@
 
         layer_6 {
             // DYA Studio対応: &studio_unlock を追加 (DYA Studio 接続時にこのキーでロック解除する)
+
             bindings = <
-&trans  &trans        &trans        &trans        &trans                           &bt BT_SEL 0  &bt BT_SEL 1  &bt BT_SEL 2  &bt BT_SEL 3  &bt BT_SEL 4
-&trans  &trans        &trans        &trans        &trans  &trans      &trans       &studio_unlock  &trans      &trans        &trans        &trans
-&trans  &kp NUMBER_1  &kp NUMBER_2  &kp NUMBER_3  &trans  &trans      &bootloader  &trans          &trans      &trans        &trans        &bt BT_CLR
-&trans  &trans        &trans        &trans        &trans  &trans      &trans       &trans                                                  &bt BT_CLR_ALL
+&trans  &trans        &trans        &trans        &trans                           &bt BT_SEL 0    &bt BT_SEL 1  &bt BT_SEL 2  &bt BT_SEL 3  &bt BT_SEL 4
+&trans  &trans        &trans        &trans        &trans  &trans      &trans       &studio_unlock  &trans        &trans        &trans        &trans
+&trans  &kp NUMBER_1  &kp NUMBER_2  &kp NUMBER_3  &trans  &trans      &bootloader  &trans          &trans        &trans        &trans        &bt BT_CLR
+&trans  &trans        &trans        &trans        &trans  &trans      &trans       &trans                                                    &bt BT_CLR_ALL
             >;
         };
     };
